@@ -139,6 +139,33 @@ Real intraday OHLC + tick volume. Hourly grain (minute data does not exist in an
 
 ---
 
+## FX fine-tuning study (EURUSD hourly, real data)
+
+The original VWAP scalper had no edge on real FX (OOS PF 1.01), so all four
+major strategy families were tested with walk-forward honesty (params from
+train 2017-04→2017-11, judged on OOS 2017-11→2018-02):
+
+| Hypothesis | Train | OOS | Verdict |
+|---|---|---|---|
+| VWAP-band scalper (original) | PF 0.54 | PF 1.01 | No edge |
+| Z-score mean reversion (18 configs) | best PF 0.98 | — | Loses even in-sample; 2017 EURUSD trended |
+| Asian-session-only mean reversion | PF 2.12 | PF 0.73 | **Curve-fit** — collapses OOS |
+| Hourly TSMOM trend (mom=240h, breakout=24h, trail=4 ATR) | PF 1.41, +14.0% | PF 5.18, +9.8% (14 trades) | **Promising, unproven** |
+
+The hourly trend-following configuration is the only one profitable on both
+sides of the split — consistent with 2017-18 EURUSD being a persistent
+macro uptrend. But it was 1 of 18 tested combos (multiple-comparison risk),
+the OOS window is 3 months and 14 trades, and the entire dataset is one pair
+in one regime. **This is a research lead, not a validated product.**
+
+What a real FX validation needs: 5+ years of hourly (or minute) data across
+several majors (EURUSD, GBPUSD, USDJPY, AUDUSD), the same walk-forward +
+Monte Carlo protocol, and session/spread modeling per pair. The demanded
+85-90% win rate did not appear in any honest configuration on real FX data;
+treat any FX system promising it as broken or fraudulent.
+
+---
+
 ## Bottom line
 
 These are the bot's first results on genuine market history. Where the synthetic-data numbers were stronger than the real-data numbers, trust the real-data numbers. None of this authorizes live capital: the required path remains full-history current data (unrestricted network) → 3–6 months paper trading → tiny live pilot.
